@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn - Employer Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">in</div>
+        <h1>Employer Registration</h1>
+        <p class="subtitle">Create your company account</p>
+        
+        <form class="login-form" id="registerForm">
+            <div class="form-group">
+                <input type="text" placeholder="Company Name" required>
+            </div>
+            <div class="form-group">
+                <input type="email" placeholder="Company Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Create Password" required>
+                <span class="toggle-password" onclick="togglePassword(this)">👁️</span>
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Company ID" required>
+            </div>
+            <button type="submit" class="login-btn">Register</button>
+        </form>
+        
+        <p class="switch-link">
+            Already have an account? <a href="employer-login.html">Sign In</a>
+        </p>
+    </div>
+    <script>
+    function togglePassword(element) {
+        const input = element.previousElementSibling;
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const companyName = this.querySelector('input[placeholder="Company Name"]').value;
+        const email = this.querySelector('input[type="email"]').value;
+        const password = this.querySelector('input[type="password"]').value;
+        const companyId = this.querySelector('input[placeholder="Company ID"]').value;
+
+        console.log('Attempting registration with:', { 
+            companyName, 
+            email, 
+            companyId,
+            userType: 'employer' 
+        });
+
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName: companyName.split(' ')[0] || companyName,
+                    lastName: companyName.split(' ')[1] || 'Company',
+                    email: email,
+                    password: password,
+                    userType: 'employer',
+                    companyName: companyName,
+                    companyId: companyId
+                })
+            });
+
+            const data = await response.json();
+            console.log('Server response:', data);
+
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                alert('Registration successful!');
+                window.location.href = 'employer-home.html';
+            } else {
+                // Show detailed error message
+                const errorMessage = data.error || data.details || 'Registration failed';
+                console.error('Registration error:', errorMessage);
+                alert('Registration failed: ' + errorMessage);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            alert('Registration failed. Server error: ' + error.message);
+        }
+    });
+</script>
+</body>
+</html>

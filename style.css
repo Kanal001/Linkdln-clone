@@ -1,0 +1,251 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f5ed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.logo {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #b0a080;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Role Selection */
+.role-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.role-card {
+    background: #f8f5ed;
+    padding: 1.5rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.role-card:hover {
+    transform: translateY(-2px);
+    border-color: #b0a080;
+}
+
+.role-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.role-card h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.role-card p {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.role-btn {
+    background: #b0a080;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.role-btn:hover {
+    background: #8a7a60;
+}
+
+/* Login Forms */
+.login-form {
+    text-align: left;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e0d9c7;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #f8f5ed;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #b0a080;
+    box-shadow: 0 0 0 2px rgba(176, 160, 128, 0.2);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+}
+
+.forgot-link {
+    display: block;
+    text-align: right;
+    color: #b0a080;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.login-btn {
+    width: 100%;
+    background: #b0a080;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #8a7a60;
+}
+
+/* Register Button */
+.register-btn {
+    background-color: #fff;
+    color: #0a66c2;
+    border: 2px solid #0a66c2;
+    margin-top: 10px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.register-btn:hover {
+    background-color: #e6f0fa;
+    color: #004182;
+}
+
+/* Divider */
+.divider {
+    margin: 1.5rem 0;
+    position: relative;
+    text-align: center;
+    color: #999;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: #e0d9c7;
+}
+
+.divider::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background: #e0d9c7;
+}
+
+/* Social Buttons */
+.social-btn {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #e0d9c7;
+    border-radius: 25px;
+    background: white;
+    cursor: pointer;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.social-btn:hover {
+    background: #f8f5ed;
+}
+
+/* Switch Link */
+.switch-link {
+    margin-top: 1.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.switch-link a {
+    color: #b0a080;
+    text-decoration: none;
+}
+
+.switch-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .container {
+        padding: 1.5rem;
+    }
+    
+    .logo {
+        font-size: 2.5rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+

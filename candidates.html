@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn - Candidates</title>
+    <style>
+        /* Re-using styles from employer-home.html for consistency */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f5ed;
+            color: #333;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0d9c7;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #b0a080;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: #b0a080;
+        }
+
+        .main {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        .page-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+        }
+
+        .search-filter {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 0.8rem;
+            border: 1px solid #e0d9c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #ffffff;
+        }
+
+        .filter-select {
+            padding: 0.8rem;
+            border: 1px solid #e0d9c7;
+            border-radius: 8px;
+            background: #ffffff;
+            min-width: 150px;
+        }
+
+        .candidates-list {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .candidate-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0ebe0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .candidate-item:hover, .candidate-item.active {
+            background: #f8f5ed;
+        }
+
+        .candidate-item-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .candidate-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e0d9c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #b0a080;
+            font-size: 1.2rem;
+        }
+
+        .candidate-info h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .candidate-info p {
+            margin: 0.2rem 0 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .candidate-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .skill-tag {
+            background: #e8f4f8;
+            color: #0077b5;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .candidate-detail {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            position: relative;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f0ebe0;
+        }
+
+        .detail-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e0d9c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #b0a080;
+            font-size: 2rem;
+        }
+
+        .detail-info h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .detail-info p {
+            margin: 0.5rem 0 0 0;
+            color: #666;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #b0a080;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #8a7a60;
+        }
+
+        .btn-secondary {
+            background: #e8f4f8;
+            color: #0077b5;
+            border: 1px solid #0077b5;
+        }
+
+        .btn-secondary:hover {
+            background: #0077b5;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .detail-sections {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .detail-section {
+            background: #f8f5ed;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .detail-section h3 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #b0a080;
+            padding-bottom: 0.5rem;
+        }
+
+        .experience-item, .education-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0d9c7;
+        }
+
+        .experience-item:last-child, .education-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .experience-item h4, .education-item h4 {
+            margin: 0;
+            color: #333;
+        }
+
+        .experience-item p, .education-item p {
+            margin: 0.3rem 0;
+            color: #666;
+        }
+
+        .experience-date, .education-date {
+            color: #b0a080;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0ebe0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e0d9c7;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .no-candidate {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-new {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-reviewed {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-hired {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+            .candidates-list {
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                gap: 1rem;
+            }
+            .header {
+                padding: 1rem;
+            }
+            .search-filter {
+                flex-direction: column;
+            }
+            .search-input {
+                min-width: auto;
+            }
+            .detail-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">in</div>
+        <nav class="nav">
+            <a href="employer-home.html" class="nav-item">Dashboard</a>
+            <a href="employer-my-jobs.html" class="nav-item">Jobs</a>
+            <a href="candidates.html" class="nav-item active">Candidates</a>
+            <a href="analytics.html" class="nav-item">Analytics</a>
+            <a href="index.html" class="nav-item">Logout</a>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Candidates</h1>
+        </div>
+
+        <div class="search-filter">
+            <input type="text" class="search-input" placeholder="Search candidates..." oninput="filterCandidates()">
+            <select class="filter-select" onchange="filterCandidates()">
+                <option value="">All Status</option>
+                <option value="new">New</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="hired">Hired</option>
+            </select>
+            <select class="filter-select" onchange="filterCandidates()">
+                <option value="">All Positions</option>
+                <option value="developer">Developer</option>
+                <option value="designer">Designer</option>
+                <option value="manager">Manager</option>
+            </select>
+        </div>
+
+        <div class="candidates-list" id="candidatesList">
+            <!-- Candidates will be populated by JavaScript -->
+        </div>
+
+        <div class="candidate-detail" id="candidateDetail">
+            <div class="no-candidate">
+                <h3>Select a candidate to view details</h3>
+                <p>Choose a candidate from the list to see their profile and take action.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Message Modal -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Send Message</h3>
+                <button class="close-modal" onclick="closeModal('messageModal')">×</button>
+            </div>
+            <form id="messageForm" onsubmit="sendMessage(event)">
+                <div class="form-group">
+                    <label for="messageSubject">Subject</label>
+                    <input type="text" id="messageSubject" required>
+                </div>
+                <div class="form-group">
+                    <label for="messageContent">Message</label>
+                    <textarea id="messageContent" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hire Modal -->
+    <div class="modal" id="hireModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Hire Candidate</h3>
+                <button class="close-modal" onclick="closeModal('hireModal')">×</button>
+            </div>
+            <form id="hireForm" onsubmit="hireCandidate(event)">
+                <div class="form-group">
+                    <label for="position">Position</label>
+                    <input type="text" id="position" required>
+                </div>
+                <div class="form-group">
+                    <label for="salary">Salary Offer</label>
+                    <input type="text" id="salary" required>
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="offerDetails">Offer Details</label>
+                    <textarea id="offerDetails" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Send Offer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample candidate data
+        const candidatesData = [
+            {
+                id: 1,
+                name: "Sarah Johnson",
+                title: "Senior Frontend Developer",
+                location: "San Francisco, CA",
+                status: "new",
+                position: "developer",
+                email: "sarah.johnson@email.com",
+                phone: "+1 (555) 123-4567",
+                skills: ["React", "JavaScript", "TypeScript", "CSS", "HTML5"],
+                experience: [
+                    {
+                        company: "TechCorp",
+                        position: "Frontend Developer",
+                        duration: "2020 - Present",
+                        description: "Developed responsive web applications using React and modern JavaScript frameworks."
+                    },
+                    {
+                        company: "WebSolutions",
+                        position: "Junior Developer",
+                        duration: "2018 - 2020",
+                        description: "Built and maintained client websites using HTML, CSS, and JavaScript."
+                    }
+                ],
+                education: [
+                    {
+                        institution: "Stanford University",
+                        degree: "BS Computer Science",
+                        duration: "2014 - 2018"
+                    }
+                ],
+                bio: "Passionate frontend developer with 5+ years of experience building scalable web applications. Strong focus on user experience and clean code."
+            },
+            {
+                id: 2,
+                name: "Michael Chen",
+                title: "UX/UI Designer",
+                location: "New York, NY",
+                status: "reviewed",
+                position: "designer",
+                email: "michael.chen@email.com",
+                phone: "+1 (555) 987-6543",
+                skills: ["Figma", "Sketch", "Adobe XD", "UI Design", "UX Research"],
+                experience: [
+                    {
+                        company: "DesignStudio",
+                        position: "Lead Designer",
+                        duration: "2019 - Present",
+                        description: "Led design team creating user interfaces for mobile and web applications."
+                    }
+                ],
+                education: [
+                    {
+                        institution: "Parsons School of Design",
+                        degree: "BFA Design",
+                        duration: "2015 - 2019"
+                    }
+                ],
+                bio: "Creative designer with expertise in user-centered design principles and creating intuitive digital experiences."
+            },
+            {
+                id: 3,
+                name: "Emily Rodriguez",
+                title: "Product Manager",
+                location: "Austin, TX",
+                status: "hired",
+                position: "manager",
+                email: "emily.rodriguez@email.com",
+                phone: "+1 (555) 456-7890",
+                skills: ["Product Management", "Agile", "Scrum", "JIRA", "Market Research"],
+                experience: [
+                    {
+                        company: "InnovateTech",
+                        position: "Product Manager",
+                        duration: "2021 - Present",
+                        description: "Managed product development lifecycle from conception to launch."
+                    }
+                ],
+                education: [
+                    {
+                        institution: "UT Austin",
+                        degree: "MBA Business",
+                        duration: "2019 - 2021"
+                    }
+                ],
+                bio: "Strategic product manager with experience in agile methodologies and cross-functional team leadership."
+            },
+            {
+                id: 4,
+                name: "David Kim",
+                title: "Full Stack Developer",
+                location: "Seattle, WA",
+                status: "new",
+                position: "developer",
+                email: "david.kim@email.com",
+                phone: "+1 (555) 234-5678",
+                skills: ["Node.js", "React", "Python", "MongoDB", "AWS"],
+                experience: [
+                    {
+                        company: "CloudSolutions",
+                        position: "Full Stack Developer",
+                        duration: "2020 - Present",
+                        description: "Developed end-to-end web applications using MERN stack and cloud services."
+                    }
+                ],
+                education: [
+                    {
+                        institution: "University of Washington",
+                        degree: "BS Software Engineering",
+                        duration: "2016 - 2020"
+                    }
+                ],
+                bio: "Full stack developer passionate about building scalable applications and solving complex problems."
+            }
+        ];
+
+        let selectedCandidate = null;
+        let filteredCandidates = [...candidatesData];
+
+        function renderCandidates() {
+            const container = document.getElementById('candidatesList');
+            container.innerHTML = '';
+
+            filteredCandidates.forEach(candidate => {
+                const candidateItem = document.createElement('div');
+                candidateItem.className = 'candidate-item';
+                if (selectedCandidate && selectedCandidate.id === candidate.id) {
+                    candidateItem.classList.add('active');
+                }
+                
+                candidateItem.innerHTML = `
+                    <div class="candidate-item-header">
+                        <div class="candidate-avatar">${candidate.name.charAt(0)}</div>
+                        <div class="candidate-info">
+                            <h3>${candidate.name}</h3>
+                            <p>${candidate.title}</p>
+                            <p>${candidate.location}</p>
+                        </div>
+                    </div>
+                    <div class="candidate-skills">
+                        ${candidate.skills.slice(0, 3).map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <span class="status-badge status-${candidate.status}">
+                            ${candidate.status.charAt(0).toUpperCase() + candidate.status.slice(1)}
+                        </span>
+                    </div>
+                `;
+                
+                candidateItem.addEventListener('click', () => showCandidateDetail(candidate));
+                container.appendChild(candidateItem);
+            });
+        }
+
+        function showCandidateDetail(candidate) {
+            selectedCandidate = candidate;
+            const detailContainer = document.getElementById('candidateDetail');
+            
+            detailContainer.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-avatar">${candidate.name.charAt(0)}</div>
+                    <div class="detail-info">
+                        <h2>${candidate.name}</h2>
+                        <p>${candidate.title}</p>
+                        <p>${candidate.location}</p>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="openModal('messageModal')">Message</button>
+                            <button class="btn btn-primary" onclick="contactCandidate()">Contact</button>
+                            <button class="btn btn-success" onclick="openModal('hireModal')">Hire</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-sections">
+                    <div class="detail-section">
+                        <h3>Contact Information</h3>
+                        <p><strong>Email:</strong> ${candidate.email}</p>
+                        <p><strong>Phone:</strong> ${candidate.phone}</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Skills</h3>
+                        <div class="candidate-skills">
+                            ${candidate.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Experience</h3>
+                        ${candidate.experience.map(exp => `
+                            <div class="experience-item">
+                                <h4>${exp.position} at ${exp.company}</h4>
+                                <p class="experience-date">${exp.duration}</p>
+                                <p>${exp.description}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Education</h3>
+                        ${candidate.education.map(edu => `
+                            <div class="education-item">
+                                <h4>${edu.degree}</h4>
+                                <p class="education-date">${edu.institution}, ${edu.duration}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>About</h3>
+                        <p>${candidate.bio}</p>
+                    </div>
+                </div>
+            `;
+
+            renderCandidates(); // Update active state
+        }
+
+        function filterCandidates() {
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const statusFilter = document.querySelectorAll('.filter-select')[0].value;
+            const positionFilter = document.querySelectorAll('.filter-select')[1].value;
+
+            filteredCandidates = candidatesData.filter(candidate => {
+                const matchesSearch = candidate.name.toLowerCase().includes(searchTerm) ||
+                                    candidate.title.toLowerCase().includes(searchTerm) ||
+                                    candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm));
+                
+                const matchesStatus = !statusFilter || candidate.status === statusFilter;
+                const matchesPosition = !positionFilter || candidate.position === positionFilter;
+
+                return matchesSearch && matchesStatus && matchesPosition;
+            });
+
+            renderCandidates();
+        }
+
+        function openModal(modalId) {
+            if (!selectedCandidate) return;
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function sendMessage(event) {
+            event.preventDefault();
+            const subject = document.getElementById('messageSubject').value;
+            const content = document.getElementById('messageContent').value;
+            
+            alert(`Message sent to ${selectedCandidate.name}!\nSubject: ${subject}\n\n${content}`);
+            closeModal('messageModal');
+            document.getElementById('messageForm').reset();
+        }
+
+        function contactCandidate() {
+            if (!selectedCandidate) return;
+            alert(`Contacting ${selectedCandidate.name}...\nEmail: ${selectedCandidate.email}\nPhone: ${selectedCandidate.phone}`);
+        }
+
+        function hireCandidate(event) {
+            event.preventDefault();
+            const position = document.getElementById('position').value;
+            const salary = document.getElementById('salary').value;
+            const startDate = document.getElementById('startDate').value;
+            const details = document.getElementById('offerDetails').value;
+            
+            alert(`Hire offer sent to ${selectedCandidate.name}!\nPosition: ${position}\nSalary: ${salary}\nStart Date: ${startDate}\n\nOffer Details:\n${details}`);
+            closeModal('hireModal');
+            document.getElementById('hireForm').reset();
+            
+            // Update candidate status to hired
+            const candidate = candidatesData.find(c => c.id === selectedCandidate.id);
+            if (candidate) {
+                candidate.status = 'hired';
+                showCandidateDetail(candidate);
+                renderCandidates();
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCandidates();
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

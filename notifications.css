@@ -1,0 +1,73 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f5ed;
+    height: 100vh;
+}
+
+.notifications-container {
+    display: flex;
+    height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 350px;
+    border-right: 1px solid #e0d9c7;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0d9c7;
+}
+
+.sidebar-header h2 {
+    color: #333;
+    font-size: 1.5rem;
+}
+
+/* Notifications List */
+.notifications-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.notification {
+    padding: 1rem;
+    border-bottom: 1px solid #e0d9c7;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.notification:hover {
+    background: #f8f5ed;
+}
+
+.notification h4 {
+    color: #333;
+    margin-bottom: 0.3rem;
+}
+
+.notification p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.notification .time {
+    color: #999;
+    font-size: 0.8rem;
+}

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn - Job Applications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f5ed;
+            color: #333;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0d9c7;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #b0a080;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #b0a080;
+        }
+
+        .nav-item.active {
+            color: #b0a080;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .stat-number {
+            font-weight: 600;
+            color: #b0a080;
+        }
+
+        .filters {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e0d9c7;
+            background: #ffffff;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #b0a080;
+            color: white;
+            border-color: #b0a080;
+        }
+
+        .filter-btn:hover {
+            border-color: #b0a080;
+        }
+
+        .applications-container {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .application-card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .application-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .application-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .applicant-name {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .job-title {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff4e5;
+            color: #f57c00;
+        }
+
+        .status-reviewed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-shortlisted {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .status-hired {
+            background: #e0f2f1;
+            color: #00796b;
+        }
+
+        .application-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e0d9c7;
+        }
+
+        .applied-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+            background: #b0a080;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #9a8c6c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: #ffffff;
+            border-radius: 12px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .application-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">in</a>
+        <nav class="nav">
+            <a href="employer-home.html" class="nav-item">Dashboard</a>
+            <a href="employer-my-jobs.html" class="nav-item">My Jobs</a>
+            <a href="employer-applications.html" class="nav-item active">Applications</a>
+            <a href="employer-post-job.html" class="nav-item">Post Job</a>
+            <a href="index.html" class="nav-item">Logout</a>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Job Applications</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span>Total Applications:</span>
+                    <span class="stat-number" id="totalApps">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Pending:</span>
+                    <span class="stat-number" id="pendingApps">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Shortlisted:</span>
+                    <span class="stat-number" id="shortlistedApps">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterApplications('all')">All</button>
+            <button class="filter-btn" onclick="filterApplications('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterApplications('reviewed')">Reviewed</button>
+            <button class="filter-btn" onclick="filterApplications('shortlisted')">Shortlisted</button>
+            <button class="filter-btn" onclick="filterApplications('rejected')">Rejected</button>
+            <button class="filter-btn" onclick="filterApplications('hired')">Hired</button>
+        </div>
+
+        <div id="loadingState" class="loading">
+            Loading applications...
+        </div>
+
+        <div id="applicationsContainer" class="applications-container" style="display: none;">
+            <!-- Applications will be loaded here -->
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>No applications yet</h3>
+            <p>Applications will appear here when candidates apply to your jobs</p>
+            <a href="employer-post-job.html" class="action-btn" style="display: inline-block; margin-top: 1rem; text-decoration: none;">Post a Job</a>
+        </div>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let allApplications = [];
+        let currentFilter = 'all';
+
+        // Check authentication
+        if (!token || user.userType !== 'employer') {
+            alert('Please login as employer to view applications');
+            window.location.href = 'employer-login.html';
+        }
+
+        // Load applications on page load
+        document.addEventListener('DOMContentLoaded', loadApplications);
+
+        async function loadApplications() {
+            try {
+                // Note: This endpoint would need to be created to get all applications for employer's jobs
+                const response = await fetch('/api/jobs/employer/all-applications', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                console.log('Applications loaded:', data);
+
+                if (response.ok && data.applications) {
+                    allApplications = data.applications;
+                    displayApplications(allApplications);
+                    updateStats(allApplications);
+                    
+                    document.getElementById('loadingState').style.display = 'none';
+                    
+                    if (allApplications.length === 0) {
+                        document.getElementById('emptyState').style.display = 'block';
+                    } else {
+                        document.getElementById('applicationsContainer').style.display = 'grid';
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to load applications');
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <p style="color: #d32f2f;">Failed to load applications. Please try again.</p>
+                `;
+            }
+        }
+
+        function displayApplications(applications) {
+            const container = document.getElementById('applicationsContainer');
+            
+            if (applications.length === 0 && currentFilter !== 'all') {
+                container.innerHTML = '<div class="empty-state"><h3>No applications found</h3><p>Try a different filter</p></div>';
+                return;
+            }
+
+            container.innerHTML = applications.map(app => `
+                <div class="application-card">
+                    <div class="application-header">
+                        <div>
+                            <h3 class="applicant-name">${app.applicant.firstName} ${app.applicant.lastName}</h3>
+                            <p class="job-title">${app.job.title}</p>
+                        </div>
+                        <span class="status-badge status-${app.status}">${formatStatus(app.status)}</span>
+                    </div>
+                    
+                    <div class="application-footer">
+                        <span class="applied-date">Applied: ${formatDate(app.appliedAt)}</span>
+                        <button class="action-btn" onclick="updateStatus('${app._id}')">Update Status</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats(applications) {
+            document.getElementById('totalApps').textContent = applications.length;
+            document.getElementById('pendingApps').textContent = applications.filter(a => a.status === 'pending').length;
+            document.getElementById('shortlistedApps').textContent = applications.filter(a => a.status === 'shortlisted').length;
+        }
+
+        function filterApplications(status) {
+            currentFilter = status;
+            
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter and display
+            const filtered = status === 'all' 
+                ? allApplications 
+                : allApplications.filter(app => app.status === status);
+            
+            displayApplications(filtered);
+        }
+
+        async function updateStatus(applicationId) {
+            const newStatus = prompt('Enter new status (pending/reviewed/shortlisted/rejected/hired):');
+            if (!newStatus) return;
+
+            // Update status logic here
+            console.log('Update application', applicationId, 'to', newStatus);
+            alert('Status update functionality - to be implemented with backend');
+        }
+
+        function formatStatus(status) {
+            const statusMap = {
+                'pending': 'Pending',
+                'reviewed': 'Reviewed',
+                'shortlisted': 'Shortlisted',
+                'rejected': 'Rejected',
+                'hired': 'Hired'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+    </script>
+</body>
+</html>

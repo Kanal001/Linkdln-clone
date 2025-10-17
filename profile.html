@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Profile</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="employee-home.html" class="logo">in</a>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="nav-icons">
+                <a href="employee-home.html" class="nav-icon"><span class="icon">🏠</span><span>Home</span></a>
+                <a href="networks.html" class="nav-icon"><span class="icon">👥</span><span>Network</span></a>
+                <a href="employee-browse-jobs.html" class="nav-icon"><span class="icon">💼</span><span>Jobs</span></a>
+                <a href="messages.html" class="nav-icon"><span class="icon">💬</span><span>Messages</span></a>
+                <a href="notification.html" class="nav-icon"><span class="icon">🔔</span><span>Notifications</span></a>
+                <a href="profile.html"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e6662dd6-0f76-4260-a025-d67ce7e2e9bf.png" alt="Profile" class="profile-img"></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-container">
+        <!-- Profile Hero Section -->
+        <div class="profile-hero">
+            <div class="cover-photo">
+                <img id="coverImage" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6cd6e2d3-7e32-4f85-b737-3c3fdf82e217.png" alt="Cover photo">
+            </div>
+            <div class="profile-info">
+                <img id="profileAvatar" src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3166fb72-9238-407d-aa11-8a1711bab584.png" alt="Profile" class="profile-avatar">
+                <div class="profile-details">
+                    <h1 id="profileName">Loading...</h1>
+                    <p class="profile-title" id="profileTitle">...</p>
+                    <p class="profile-location" id="profileLocation">... · <a href="#">Contact info</a></p>
+                    <p class="profile-connections" id="profileConnections">... connections</p>
+                    <div class="profile-actions" id="profileActions">
+                        <button class="btn-primary">Open to</button>
+                        <button class="btn-secondary">Add profile section</button>
+                        <button class="btn-secondary">More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="profile-grid">
+            <!-- Left Column -->
+            <div class="profile-left">
+                <!-- About Section -->
+                <div class="profile-card">
+                    <h2>About</h2>
+                    <p id="aboutText">Loading...</p>
+                </div>
+
+                <!-- Experience Section -->
+                <div class="profile-card">
+                    <h2>Experience</h2>
+                    <div id="experienceList">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Education Section -->
+                <div class="profile-card">
+                    <h2>Education</h2>
+                    <div id="educationList">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="profile-right">
+                <!-- Stats Card -->
+                <div class="profile-card">
+                    <h3>Profile viewers</h3>
+                    <p class="viewer-count" id="viewerCount">... profile views in last 90 days</p>
+                    <p class="viewer-desc">See who's viewed your profile</p>
+                </div>
+
+                <!-- Skills Card -->
+                <div class="profile-card">
+                    <h3>Skills</h3>
+                    <div class="skills-list" id="skillsList">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Recommendations Card -->
+                <div class="profile-card">
+                    <h3>Recommendations</h3>
+                    <div id="recommendationsList">
+                        <p>No recommendations yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+    // ========================================
+    // PROFILE - BACKEND INTEGRATION
+    // ========================================
+    
+    function getToken() { return localStorage.getItem('token'); }
+    function getCurrentUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
+    function protectPage() { if (!getToken()) window.location.href = 'index.html'; }
+
+    async function apiRequest(endpoint, options = {}) {
+      const token = getToken();
+      const config = { ...options, headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }), ...options.headers }};
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (!response.ok) { 
+        if (response.status === 401) { localStorage.clear(); window.location.href = 'index.html'; } 
+        throw new Error(data.error || 'Failed'); 
+      }
+      return data;
+    }
+
+    function showToast(msg, type='success') {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = `position:fixed;top:20px;right:20px;background:${type==='success'?'#4CAF50':'#f44336'};color:white;padding:16px 24px;border-radius:8px;z-index:10000;`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    protectPage();
+
+    // Get user ID from URL or use current user
+    const urlParams = new URLSearchParams(window.location.search);
+    const profileUserId = urlParams.get('id');
+    const currentUser = getCurrentUser();
+    const isOwnProfile = !profileUserId || profileUserId === currentUser._id;
+
+    // Load profile
+    async function loadProfile() {
+      try {
+        const userId = isOwnProfile ? currentUser._id : profileUserId;
+        const profile = await apiRequest(`/users/${userId}`);
+        
+        // Update header
+        document.getElementById('profileName').textContent = `${profile.firstName} ${profile.lastName}`;
+        document.getElementById('profileTitle').textContent = profile.headline || 'Professional';
+        document.getElementById('profileLocation').innerHTML = `${profile.location || 'Location not set'} · <a href="#">Contact info</a>`;
+        
+        const connectedCount = (profile.connections || []).filter(c => c.status === 'connected').length;
+        document.getElementById('profileConnections').textContent = `${connectedCount}+ connections`;
+        
+        // Images
+        if (profile.profileImage) {
+          document.getElementById('profileAvatar').src = profile.profileImage;
+        }
+        if (profile.coverImage) {
+          document.getElementById('coverImage').src = profile.coverImage;
+        }
+        
+        // About
+        document.getElementById('aboutText').textContent = profile.summary || 'No bio added yet';
+        
+        // Experience
+        const expList = document.getElementById('experienceList');
+        if (profile.experience && profile.experience.length > 0) {
+          expList.innerHTML = profile.experience.map(exp => `
+            <div class="experience-item">
+              <img src="https://placehold.co/48x48" alt="Company logo">
+              <div class="experience-details">
+                <h3>${exp.title}</h3>
+                <p class="company">${exp.company}</p>
+                <p class="duration">${exp.startDate ? new Date(exp.startDate).getFullYear() : ''} - ${exp.current ? 'Present' : (exp.endDate ? new Date(exp.endDate).getFullYear() : '')}</p>
+                <p class="location">${exp.location || ''}</p>
+                <p>${exp.description || ''}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          expList.innerHTML = '<p>No experience added</p>';
+        }
+        
+        // Education
+        const eduList = document.getElementById('educationList');
+        if (profile.education && profile.education.length > 0) {
+          eduList.innerHTML = profile.education.map(edu => `
+            <div class="education-item">
+              <img src="https://placehold.co/48x48" alt="University logo">
+              <div class="education-details">
+                <h3>${edu.institution}</h3>
+                <p class="degree">${edu.degree} - ${edu.fieldOfStudy}</p>
+                <p class="duration">${edu.startDate ? new Date(edu.startDate).getFullYear() : ''} - ${edu.endDate ? new Date(edu.endDate).getFullYear() : ''}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          eduList.innerHTML = '<p>No education added</p>';
+        }
+        
+        // Skills
+        const skillsList = document.getElementById('skillsList');
+        if (profile.skills && profile.skills.length > 0) {
+          skillsList.innerHTML = profile.skills.map(skill => 
+            `<span class="skill">${skill}</span>`
+          ).join('');
+          
+          // Add skill animation
+          document.querySelectorAll('.skill').forEach(skill => {
+            skill.addEventListener('mouseenter', () => skill.style.transform = 'translateY(-2px)');
+            skill.addEventListener('mouseleave', () => skill.style.transform = 'translateY(0)');
+          });
+        } else {
+          skillsList.innerHTML = '<p>No skills added</p>';
+        }
+        
+        // Profile views
+        const viewCount = (profile.profileViews || []).length;
+        document.getElementById('viewerCount').textContent = `${viewCount} profile views in last 90 days`;
+        
+        // Show connect/message buttons for other profiles
+        if (!isOwnProfile) {
+          const actions = document.getElementById('profileActions');
+          actions.innerHTML = `
+            <button class="btn-primary" onclick="connectUser('${profile._id}')">Connect</button>
+            <button class="btn-secondary" onclick="messageUser('${profile._id}')">Message</button>
+          `;
+        }
+        
+      } catch (error) {
+        console.error('Failed to load profile:', error);
+        showToast('Failed to load profile', 'error');
+      }
+    }
+
+    // Connect with user
+    window.connectUser = async function(userId) {
+      try {
+        await apiRequest(`/users/connect/${userId}`, { method: 'POST' });
+        showToast('Connection request sent!');
+      } catch (error) {
+        showToast(error.message || 'Failed to send request', 'error');
+      }
+    };
+
+    // Message user
+    window.messageUser = function(userId) {
+      window.location.href = `messages.html?user=${userId}`;
+    };
+
+    // Initial load
+    loadProfile();
+    </script>
+</body>
+</html>

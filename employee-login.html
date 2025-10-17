@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn - Employee Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">in</div>
+        <h1>Employee Sign In</h1>
+        <p class="subtitle">Welcome back to your professional community</p>
+        
+        <form class="login-form">
+            <div class="form-group">
+                <input type="email" placeholder="Email or Phone" required>
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" required>
+                <span class="toggle-password" onclick="togglePassword(this)">👁️</span>
+            </div>
+            <a href="#" class="forgot-link">Forgot password?</a>
+            <button type="submit" class="login-btn">Sign In</button>
+            <button type="button" class="login-btn register-btn" onclick="window.location.href='employee-register.html'">Register</button>
+        </form>
+        
+        <div class="divider">or</div>
+        
+        <button class="social-btn google-btn">Continue with Google</button>
+        <button class="social-btn apple-btn">Continue with Apple</button>
+        
+        <p class="switch-link">
+            Not an employee? <a href="index.html">Choose different role</a>
+        </p>
+    </div>
+    
+    <script src="employee-login.js"></script>
+</body>
+</html>

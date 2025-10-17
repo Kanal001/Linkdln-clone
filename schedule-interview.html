@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn - Schedule Interview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f5ed;
+            color: #333;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0d9c7;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #b0a080;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #b0a080;
+        }
+
+        .nav-item.active {
+            color: #b0a080;
+        }
+
+        .main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Form styling */
+        .schedule-container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e0d9c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #ffffff;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #b0a080;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-button {
+            background: #b0a080;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: inline-block;
+        }
+
+        .form-button:hover {
+            background: #9a8c6c;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .button-secondary {
+            background: #f8f5ed;
+            color: #666;
+            border: 1px solid #e0d9c7;
+        }
+
+        .button-secondary:hover {
+            background: #e0d9c7;
+        }
+
+        /* Success message */
+        .success-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">in</div>
+        <nav class="nav">
+            <a href="employer-home.html" class="nav-item">Dashboard</a>
+            <a href="review-applications.html" class="nav-item">Review Applications</a>
+            <a href="schedule-interview.html" class="nav-item active">Schedule Interview</a>
+            <a href="analytics.html" class="nav-item">View Analytics</a>
+            <a href="index.html" class="nav-item">Logout</a>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Schedule Interview</h1>
+            <p class="page-subtitle">Coordinate and manage interviews with your candidates</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            Interview scheduled successfully! The candidate has been notified.
+        </div>
+
+        <div class="schedule-container">
+            <form id="scheduleInterviewForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="candidateName" class="form-label">Candidate Name *</label>
+                        <select id="candidateName" class="form-select" required>
+                            <option value="" disabled selected>Select a candidate</option>
+                            <option value="sarah-chen">Sarah Chen - Senior Developer</option>
+                            <option value="mike-rodriguez">Mike Rodriguez - UX Designer</option>
+                            <option value="james-wilson">James Wilson - Product Manager</option>
+                            <option value="lisa-patel">Lisa Patel - DevOps Engineer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobPosition" class="form-label">Job Position *</label>
+                        <select id="jobPosition" class="form-select" required>
+                            <option value="" disabled selected>Select position</option>
+                            <option value="senior-developer">Senior Frontend Developer</option>
+                            <option value="ux-designer">UX/UI Designer</option>
+                            <option value="product-manager">Product Manager</option>
+                            <option value="devops-engineer">DevOps Engineer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interviewDate" class="form-label">Interview Date *</label>
+                        <input type="date" id="interviewDate" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interviewTime" class="form-label">Interview Time *</label>
+                        <input type="time" id="interviewTime" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interviewDuration" class="form-label">Duration *</label>
+                        <select id="interviewDuration" class="form-select" required>
+                            <option value="30">30 minutes</option>
+                            <option value="45">45 minutes</option>
+                            <option value="60" selected>60 minutes</option>
+                            <option value="90">90 minutes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interviewMode" class="form-label">Interview Mode *</label>
+                        <select id="interviewMode" class="form-select" required>
+                            <option value="video" selected>Video Call</option>
+                            <option value="in-person">In-Person</option>
+                            <option value="phone">Phone Call</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="interviewers" class="form-label">Interviewers</label>
+                    <input type="text" id="interviewers" class="form-input" placeholder="Enter interviewer names (comma separated)">
+                </div>
+
+                <div class="form-group">
+                    <label for="meetingLink" class="form-label">Meeting Link/Location</label>
+                    <input type="text" id="meetingLink" class="form-input" placeholder="Enter Zoom/Teams link or location">
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalNotes" class="form-label">Additional Notes</label>
+                    <textarea id="additionalNotes" class="form-textarea" placeholder="Any special instructions or notes for the candidate"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="form-button">Schedule Interview</button>
+                    <button type="button" class="form-button button-secondary" onclick="clearForm()">Clear Form</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('interviewDate').min = today;
+
+        document.getElementById('scheduleInterviewForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+            
+            // Here you would typically send the data to your backend
+            console.log('Interview scheduled:', {
+                candidate: document.getElementById('candidateName').value,
+                position: document.getElementById('jobPosition').value,
+                date: document.getElementById('interviewDate').value,
+                time: document.getElementById('interviewTime').value,
+                duration: document.getElementById('interviewDuration').value,
+                mode: document.getElementById('interviewMode').value,
+                interviewers: document.getElementById('interviewers').value,
+                location: document.getElementById('meetingLink').value,
+                notes: document.getElementById('additionalNotes').value
+            });
+            
+            // Clear form after successful submission
+            setTimeout(() => {
+                this.reset();
+            }, 1000);
+        });
+
+        function clearForm() {
+            document.getElementById('scheduleInterviewForm').reset();
+        }
+
+        // Auto-fill job position based on candidate selection
+        document.getElementById('candidateName').addEventListener('change', function() {
+            const candidatePositions = {
+                'sarah-chen': 'senior-developer',
+                'mike-rodriguez': 'ux-designer',
+                'james-wilson': 'product-manager',
+                'lisa-patel': 'devops-engineer'
+            };
+            
+            const position = candidatePositions[this.value];
+            if (position) {
+                document.getElementById('jobPosition').value = position;
+            }
+        });
+    </script>
+</body>
+</html>

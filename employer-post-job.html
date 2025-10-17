@@ -1,0 +1,283 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn - Post New Job</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f5ed;
+            color: #333;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #e0d9c7;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #b0a080;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: #b0a080;
+        }
+
+        .main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .post-job-section {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .post-job-section h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e0d9c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f8f5ed;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #b0a080;
+            box-shadow: 0 0 0 2px rgba(176, 160, 128, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-submit {
+            background: #b0a080;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            display: block;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        .btn-submit:hover {
+            background: #8a7a60;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                gap: 1rem;
+            }
+            .header {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">in</div>
+        <nav class="nav">
+            <a href="employer-home.html" class="nav-item">Dashboard</a>
+            <a href="employer-post-job.html" class="nav-item active">Post Job</a>
+            <a href="employer-my-jobs.html" class="nav-item">My Jobs</a>
+            <a href="index.html" class="nav-item">Logout</a>
+        </nav>
+    </header>
+
+    <main class="main">
+        <section class="post-job-section">
+            <h1>Post a New Job</h1>
+            <form id="postJobForm">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title</label>
+                    <input type="text" id="jobTitle" placeholder="e.g., Senior Software Engineer" required>
+                </div>
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" placeholder="e.g., TechCorp" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" placeholder="e.g., San Francisco, CA (or Remote)" required>
+                </div>
+                <div class="form-group">
+                    <label for="employmentType">Employment Type</label>
+                    <select id="employmentType" required>
+                        <option value="">Select Type</option>
+                        <option value="full-time">Full-time</option>
+                        <option value="part-time">Part-time</option>
+                        <option value="contract">Contract</option>
+                        <option value="internship">Internship</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="experienceLevel">Experience Level</label>
+                    <select id="experienceLevel" required>
+                        <option value="">Select Level</option>
+                        <option value="entry-level">Entry Level</option>
+                        <option value="associate">Associate</option>
+                        <option value="mid-senior">Mid-Senior Level</option>
+                        <option value="director">Director</option>
+                        <option value="executive">Executive</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="jobDescription">Job Description</label>
+                    <textarea id="jobDescription" placeholder="Provide a detailed description of the role, responsibilities, and requirements." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="skills">Required Skills (comma-separated)</label>
+                    <input type="text" id="skills" placeholder="e.g., React, Node.js, AWS, Agile">
+                </div>
+                <div class="form-group">
+                    <label for="applicationEmail">Application Email / Link</label>
+                    <input type="text" id="applicationEmail" placeholder="e.g., careers@yourcompany.com or application link" required>
+                </div>
+                <button type="submit" class="btn-submit">Post Job</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+    // REPLACE the existing <script> section in post-job.html with this:
+
+document.addEventListener('DOMContentLoaded', function() {
+    const postJobForm = document.getElementById('postJobForm');
+
+    // Check if user is logged in as employer
+    const authToken = localStorage.getItem('authToken');
+    const userType = localStorage.getItem('userType');
+    
+    if (!authToken || userType !== 'employer') {
+        alert('Please login as employer to post jobs');
+        window.location.href = 'employer-login.html';
+        return;
+    }
+
+    postJobForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Collect form data
+        const jobData = {
+            title: document.getElementById('jobTitle').value.trim(),
+            company: document.getElementById('companyName').value.trim(),
+            location: document.getElementById('location').value.trim(),
+            employmentType: document.getElementById('employmentType').value,
+            experienceLevel: document.getElementById('experienceLevel').value,
+            description: document.getElementById('jobDescription').value.trim(),
+            skills: document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s),
+            applicationEmail: document.getElementById('applicationEmail').value.trim(),
+            status: 'active'
+        };
+
+        // Validate required fields
+        if (!jobData.title || !jobData.company || !jobData.location || 
+            !jobData.employmentType || !jobData.experienceLevel || 
+            !jobData.description || !jobData.applicationEmail) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = postJobForm.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Posting Job...';
+
+        try {
+            // Send job data to backend
+            const response = await fetch('/api/jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify(jobData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Success!
+                alert('Job posted successfully! Job ID: ' + result.job._id);
+                console.log('Job created:', result);
+                
+                // Redirect to jobs page
+                window.location.href = 'employer-my-jobs.html';
+            } else {
+                // Show error
+                alert('Error: ' + (result.error || 'Failed to post job'));
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Post Job';
+            }
+
+        } catch (error) {
+            console.error('Post job error:', error);
+            alert('Connection error. Please check if server is running.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Post Job';
+        }
+    });
+});
+    </script>
+</body>
+</html>

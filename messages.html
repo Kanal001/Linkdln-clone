@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Messages</title>
+    <link rel="stylesheet" href="messages.css">
+</head>
+<body>
+    <div class="messages-container">
+        <!-- Left Sidebar - Conversations -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Messages</h2>
+                <button class="new-chat-btn">+</button>
+            </div>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" placeholder="Search messages">
+            </div>
+            <div class="conversations-list">
+                <!-- Conversations loaded from backend -->
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-user">
+                    <img src="https://placehold.co/50x50" alt="User">
+                    <div>
+                        <h3>Select a conversation</h3>
+                        <p>Choose from your conversations</p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="icon-btn">📞</button>
+                    <button class="icon-btn">📹</button>
+                    <button class="icon-btn">ℹ️</button>
+                </div>
+            </div>
+
+            <div class="messages-list">
+                <!-- Messages will be loaded dynamically -->
+            </div>
+
+            <div class="message-input">
+                <input type="text" placeholder="Type a message...">
+                <button class="send-btn">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ========================================
+    // MESSAGES - BACKEND INTEGRATION
+    // ========================================
+    
+    function getToken() { return localStorage.getItem('token'); }
+    function getCurrentUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
+    function protectPage() { if (!getToken()) window.location.href = 'index.html'; }
+
+    async function apiRequest(endpoint, options = {}) {
+      const token = getToken();
+      const config = { ...options, headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }), ...options.headers }};
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (!response.ok) { 
+        if (response.status === 401) { localStorage.clear(); window.location.href = 'index.html'; } 
+        throw new Error(data.error || 'Request failed'); 
+      }
+      return data;
+    }
+
+    function showToast(msg, type='success') {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = `position:fixed;top:20px;right:20px;background:${type==='success'?'#4CAF50':'#f44336'};color:white;padding:16px 24px;border-radius:8px;z-index:10000;`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    function formatTime(date) {
+      const diff = Date.now() - new Date(date);
+      const mins = Math.floor(diff/60000);
+      const hours = Math.floor(mins/60);
+      if (mins < 60) return `${mins}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      return new Date(date).toLocaleDateString();
+    }
+
+    protectPage();
+
+    let currentConversationId = null;
+    let conversations = [];
+
+    // Load all conversations
+    async function loadConversations() {
+      try {
+        const data = await apiRequest('/messages/conversations');
+        conversations = data.conversations || [];
+        
+        const conversationsList = document.querySelector('.conversations-list');
+        conversationsList.innerHTML = '';
+        
+        conversations.forEach(conv => {
+          const p = conv.participant;
+          const div = document.createElement('div');
+          div.className = 'conversation';
+          div.innerHTML = `
+            <img src="${p.profileImage || 'https://placehold.co/50x50'}" alt="${p.firstName} ${p.lastName}">
+            <div class="conversation-info">
+              <h4>${p.firstName} ${p.lastName}</h4>
+              <p>${conv.lastMessage?.content || 'No messages yet'}</p>
+              <span class="time">${formatTime(conv.lastMessageAt)}</span>
+            </div>
+          `;
+          
+          div.addEventListener('click', () => {
+            document.querySelectorAll('.conversation').forEach(c => c.classList.remove('active'));
+            div.classList.add('active');
+            loadConversation(conv.conversationId, p);
+          });
+          
+          conversationsList.appendChild(div);
+        });
+        
+        // Auto-select first conversation
+        if (conversations.length > 0 && !currentConversationId) {
+          const first = conversations[0];
+          loadConversation(first.conversationId, first.participant);
+        }
+      } catch (error) {
+        console.error('Failed to load conversations:', error);
+        showToast('Failed to load conversations', 'error');
+      }
+    }
+
+    // Load conversation messages
+    async function loadConversation(conversationId, participant) {
+      try {
+        currentConversationId = conversationId;
+        const data = await apiRequest(`/messages/conversations/${conversationId}`);
+        
+        // Update chat header
+        const chatUser = document.querySelector('.chat-user');
+        chatUser.querySelector('h3').textContent = `${participant.firstName} ${participant.lastName}`;
+        chatUser.querySelector('p').textContent = participant.headline || 'Professional';
+        chatUser.querySelector('img').src = participant.profileImage || 'https://placehold.co/50x50';
+        
+        // Display messages
+        const messagesList = document.querySelector('.messages-list');
+        messagesList.innerHTML = '';
+        
+        (data.messages || []).forEach(msg => {
+          const isSent = msg.sender._id === getCurrentUser()._id;
+          const div = document.createElement('div');
+          div.className = `message ${isSent ? 'sent' : 'received'}`;
+          div.innerHTML = `
+            ${!isSent ? `<img src="${msg.sender.profileImage || 'https://placehold.co/40x40'}" alt="${msg.sender.firstName}">` : ''}
+            <div class="message-content">
+              <p>${msg.content}</p>
+              <span class="time">${formatTime(msg.createdAt)}</span>
+            </div>
+          `;
+          messagesList.appendChild(div);
+        });
+        
+        messagesList.scrollTop = messagesList.scrollHeight;
+      } catch (error) {
+        console.error('Failed to load conversation:', error);
+        showToast('Failed to load messages', 'error');
+      }
+    }
+
+    // Send message
+    async function sendMessage() {
+      const input = document.querySelector('.message-input input');
+      const text = input.value.trim();
+      if (!text || !currentConversationId) return;
+      
+      try {
+        const conv = conversations.find(c => c.conversationId === currentConversationId);
+        await apiRequest('/messages/send', {
+          method: 'POST',
+          body: JSON.stringify({ recipientId: conv.participant._id, content: text })
+        });
+        
+        input.value = '';
+        loadConversation(currentConversationId, conv.participant);
+        loadConversations();
+      } catch (error) {
+        showToast('Failed to send message', 'error');
+      }
+    }
+
+    // Event listeners
+    const sendBtn = document.querySelector('.send-btn');
+    const messageInput = document.querySelector('.message-input input');
+    
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    if (messageInput) messageInput.addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
+
+    // Initial load
+    loadConversations();
+    setInterval(loadConversations, 30000); // Refresh every 30s
+    </script>
+</body>
+</html>

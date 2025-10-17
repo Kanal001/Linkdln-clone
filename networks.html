@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Network</title>
+    <link rel="stylesheet" href="networks.css">
+</head>
+<body>
+    <div class="networks-container">
+        <!-- Left Sidebar - Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Your Network</h2>
+            </div>
+            <div class="connections-list">
+                <!-- Connections will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ========================================
+    // NETWORKS/CONNECTIONS - BACKEND INTEGRATION
+    // ========================================
+    
+    function getToken() { return localStorage.getItem('token'); }
+    function protectPage() { if (!getToken()) window.location.href = 'index.html'; }
+
+    async function apiRequest(endpoint, options = {}) {
+      const token = getToken();
+      const config = { ...options, headers: { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }), ...options.headers }};
+      const response = await fetch(`/api${endpoint}`, config);
+      const data = await response.json();
+      if (!response.ok) { 
+        if (response.status === 401) { localStorage.clear(); window.location.href = 'index.html'; } 
+        throw new Error(data.error || 'Failed'); 
+      }
+      return data;
+    }
+
+    function showToast(msg, type='success') {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = `position:fixed;top:20px;right:20px;background:${type==='success'?'#4CAF50':'#f44336'};color:white;padding:16px 24px;border-radius:8px;z-index:10000;`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+
+    function formatTime(date) {
+      const diff = Date.now() - new Date(date);
+      const days = Math.floor(diff/86400000);
+      return days < 7 ? `${days}d ago` : new Date(date).toLocaleDateString();
+    }
+
+    protectPage();
+
+    let connections = [];
+
+    // Load connections
+    async function loadConnections() {
+      try {
+        const data = await apiRequest('/users/profile/connections');
+        connections = data.connections || [];
+        renderConnections();
+      } catch (error) {
+        console.error('Failed to load connections:', error);
+        showToast('Failed to load connections', 'error');
+      }
+    }
+
+    // Render connections
+    function renderConnections() {
+      const connectionsList = document.querySelector('.connections-list');
+      connectionsList.innerHTML = `
+        <div style="padding:1rem;">
+          <input type="text" id="searchInput" placeholder="Search connections..." 
+            style="width:100%;padding:0.8rem;border:1px solid #e0d9c7;border-radius:25px;margin-bottom:1rem;">
+        </div>
+      `;
+      
+      if (connections.length === 0) {
+        connectionsList.innerHTML += '<p style="text-align:center;padding:2rem;color:#999">No connections found</p>';
+        return;
+      }
+      
+      connections.forEach(conn => {
+        const div = document.createElement('div');
+        div.className = 'connection';
+        div.style.cssText = 'display:flex;align-items:center;padding:1rem;border-bottom:1px solid #e0d9c7;cursor:pointer;transition:background 0.3s;';
+        div.innerHTML = `
+          <img src="${conn.profileImage || 'https://placehold.co/60x60'}" 
+               alt="${conn.firstName}" 
+               style="width:60px;height:60px;border-radius:50%;margin-right:1rem;object-fit:cover;">
+          <div style="flex:1;">
+            <h4 style="margin:0;color:#333;">${conn.firstName} ${conn.lastName}</h4>
+            <p style="margin:0.3rem 0;color:#666;font-size:0.9rem;">${conn.headline || 'Professional'}</p>
+            <p style="margin:0.3rem 0;color:#999;font-size:0.85rem;">${conn.location || ''}</p>
+            <p style="margin:0.3rem 0;color:#999;font-size:0.85rem;">Connected ${formatTime(conn.connectedAt)}</p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="msg-btn" data-id="${conn._id}" 
+              style="padding:0.6rem 1.2rem;background:#b0a080;color:white;border:none;border-radius:20px;cursor:pointer;font-weight:500;">
+              Message
+            </button>
+            <button class="view-btn" data-id="${conn._id}"
+              style="padding:0.6rem 1.2rem;background:#fff;color:#666;border:1px solid #e0d9c7;border-radius:20px;cursor:pointer;font-weight:500;">
+              View Profile
+            </button>
+          </div>
+        `;
+        
+        div.addEventListener('mouseenter', () => div.style.background = '#f8f5ed');
+        div.addEventListener('mouseleave', () => div.style.background = 'transparent');
+        
+        connectionsList.appendChild(div);
+      });
+      
+      // Message buttons
+      document.querySelectorAll('.msg-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.location.href = `messages.html?user=${btn.dataset.id}`;
+        });
+      });
+      
+      // View profile buttons
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.location.href = `profile.html?id=${btn.dataset.id}`;
+        });
+      });
+      
+      // Search functionality
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        document.querySelectorAll('.connection').forEach(c => {
+          const text = c.textContent.toLowerCase();
+          c.style.display = text.includes(term) ? 'flex' : 'none';
+        });
+      });
+    }
+
+    // Initial load
+    loadConnections();
+    </script>
+</body>
+</html>
